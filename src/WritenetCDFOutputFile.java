@@ -27,10 +27,10 @@ import ucar.nc2.write.Nc4Chunking.Strategy;
  */
 public class WritenetCDFOutputFile
 {
-    String filename = "inputdata.nc3";
+    String filename = "inputdata.nc4";
     NetcdfFileWriter dataFile = null;
 
-    public void write(final DataFileStructure dfs, final String s) throws Exception
+    public void write(DataFileStructure dfs, final String s) throws Exception
     {
         if (dfs == null)
         {
@@ -225,93 +225,14 @@ public class WritenetCDFOutputFile
                 for (int j = 0; j < dfs.nareas; ++j)
                 {
                     gname = "pop_" + Integer.toString(i) + "_area_" + Integer.toString(j);
-                    gidx_st = Integer.toString(gidx);
                     System.out.println("Starting " + gname);
 
-                    // get netCDF variable for catch
-                    // tempGroup = popAreaGroups.get(gidx);
-                    // catchVar = tempGroup.findVariable("catch_biomass");
-                    catchVar = dataFile.findVariable(gname + "/catch_biomass");
+                    tempGroup = popAreaGroups.get(gidx);
 
-                    int[] catchDim = new int[]{dfs.nfsh, dfs.nyears, dfs.nseas};
-                    Array catchOutput = Array.factory(DataType.FLOAT, catchDim);
-                    Index3D idx_C = new Index3D(catchDim);
-
-                     for (int k = 0; k < dfs.nfsh; ++k)
-                    {
-                        for (int l = 0; l < dfs.nyears; ++l)
-                        {
-                            for (int m = 0; m < dfs.nseas; ++m)
-                            {
-                                idx_C.set(k,l,m);
-                                catchOutput.setFloat(idx_C, dfs.catch_array[i][j][k][l][m]);
-                            }
-                        }
-                    }
-
-                    System.out.println("copied catch_array values");
-
-                    System.out.println(catchVar.getNameAndDimensions());
-                    System.out.println(Arrays.toString(catchOutput.getShape()));
-                    // dataFile.write(catchVar, catchOutput);
-                    dataFile.write(catchVar, new int[] {0, 0, 0}, catchOutput);
-                    System.out.println("wrote catchVar");
-
-                    if (dfs.nfsh_len_bins > 1)
-                    {
-                        int[] calDim = new int[]{dfs.nfsh, dfs.nyears, dfs.nseas, dfs.nsex, dfs.nfsh_len_bins};
-                        Array fshLengthOutput = Array.factory(DataType.FLOAT, calDim);
-                        Index5D idx_cal = new Index5D(calDim);
-
-                        for (int k = 0; k < dfs.nfsh; ++k)
-                        {
-                            for (int l = 0; l < dfs.nyears; ++l)
-                            {
-                                for (int m = 0; m < dfs.nseas; ++m)
-                                {
-                                    for (int n = 0; n < dfs.nsex; ++n)
-                                    {
-                                        for (int o = 0; o < dfs.nfsh_len_bins; ++o)
-                                        {
-                                            idx_cal.set(k,l,m,n,o);
-                                            fshLengthOutput.setFloat(idx_cal, dfs.catch_lencomps[i][j][k][l][m][n][o]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        dataFile.write(catchLengthsVar, fshLengthOutput);
-                    }
-
-                    if (dfs.nfsh_age_bins > 1)
-                    {
-                        int[] caaDim = new int[]{dfs.nfsh, dfs.nyears, dfs.nseas, dfs.nsex, dfs.nfsh_age_bins};
-                        Array fshAgeOutput    = Array.factory(DataType.FLOAT, caaDim);
-                        Index5D idx_caa = new Index5D(caaDim);
-
-                        for (int k = 0; k < dfs.nfsh; ++k)
-                        {
-                            for (int l = 0; l < dfs.nyears; ++l)
-                            {
-                                for (int m = 0; m < dfs.nseas; ++m)
-                                {
-                                    for (int n = 0; n < dfs.nsex; ++n)
-                                    {
-                                        for (int o = 0; o < dfs.nfsh_age_bins; ++o)
-                                        {
-                                            idx_caa.set(k,l,m,n,o);
-                                            fshAgeOutput.setFloat(idx_caa, dfs.catch_agecomps[i][j][k][l][m][n][o]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        dataFile.write(catchAgesVar, fshAgeOutput);
-                    }
-
-                    System.out.println("finished with catch data");
+                    catchVar         = dataFile.findVariable(gname + "/catch_biomass");
+                    catchLengthsVar  = dataFile.findVariable(gname + "/catch_proportions_at_length");
+                    catchAgesVar     = dataFile.findVariable(gname + "/catch_proportions_at_age");
+                    writeCatch(dfs, dataFile, i, j, catchVar, catchLengthsVar, catchAgesVar);
 
                     surveyVar        = dataFile.findVariable(gname + "/index_biomass");
                     surveyLengthsVar = dataFile.findVariable(gname + "/index_proportions_at_length");
@@ -321,6 +242,122 @@ public class WritenetCDFOutputFile
                     gidx++;
                 }
             }
+        }
+        catch (IOException | InvalidRangeException e)
+        {
+          e.printStackTrace();
+        }
+        finally
+        {
+          if (null != dataFile)
+            try
+            {
+              dataFile.close();
+            }
+            catch (IOException ioe)
+            {
+              ioe.printStackTrace();
+            }
+        }
+    }
+
+    public void writeCatch(final DataFileStructure dfs, NetcdfFileWriter dataFile, final int pop_num, final int area_num,
+                           Variable catchVar, Variable catchLengthsVar, Variable catchAgesVar) throws Exception
+    {
+        if (dfs == null)
+        {
+            throw new Exception("DataFileStructure not initialized");
+        }
+
+        try
+        {
+            int i = pop_num;
+            int j = area_num;
+
+            int[] catchDim = new int[]{dfs.nfsh, dfs.nyears, dfs.nseas};
+            Array catchOutput = Array.factory(DataType.FLOAT, catchDim);
+            Index3D idx_C = new Index3D(catchDim);
+
+             for (int k = 0; k < dfs.nfsh; ++k)
+            {
+                for (int l = 0; l < dfs.nyears; ++l)
+                {
+                    for (int m = 0; m < dfs.nseas; ++m)
+                    {
+                        idx_C.set(k,l,m);
+                        catchOutput.setFloat(idx_C, dfs.catch_array[i][j][k][l][m]);
+                    }
+                }
+            }
+
+            System.out.println("copied catch_array values");
+
+            System.out.println(catchVar.getNameAndDimensions());
+            System.out.println(Arrays.toString(catchOutput.getShape()));
+            dataFile.write(catchVar, catchOutput);
+            System.out.println("wrote catchVar");
+
+            if (dfs.nfsh_len_bins > 1)
+            {
+                int[] calDim = new int[]{dfs.nfsh, dfs.nyears, dfs.nseas, dfs.nsex, dfs.nfsh_len_bins};
+                Array fshLengthOutput = Array.factory(DataType.FLOAT, calDim);
+                Index5D idx_cal = new Index5D(calDim);
+
+                for (int k = 0; k < dfs.nfsh; ++k)
+                {
+                    for (int l = 0; l < dfs.nyears; ++l)
+                    {
+                        for (int m = 0; m < dfs.nseas; ++m)
+                        {
+                            for (int n = 0; n < dfs.nsex; ++n)
+                            {
+                                for (int o = 0; o < dfs.nfsh_len_bins; ++o)
+                                {
+                                    idx_cal.set(k,l,m,n,o);
+                                    fshLengthOutput.setFloat(idx_cal, dfs.catch_lencomps[i][j][k][l][m][n][o]);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                System.out.println("copied catch_lencomps values");
+
+                dataFile.write(catchLengthsVar, fshLengthOutput);
+                System.out.println("wrote catchLengthsVar");
+            }
+
+            if (dfs.nfsh_age_bins > 1)
+            {
+                int[] caaDim = new int[]{dfs.nfsh, dfs.nyears, dfs.nseas, dfs.nsex, dfs.nfsh_age_bins};
+                Array fshAgeOutput    = Array.factory(DataType.FLOAT, caaDim);
+                Index5D idx_caa = new Index5D(caaDim);
+
+                for (int k = 0; k < dfs.nfsh; ++k)
+                {
+                    for (int l = 0; l < dfs.nyears; ++l)
+                    {
+                        for (int m = 0; m < dfs.nseas; ++m)
+                        {
+                            for (int n = 0; n < dfs.nsex; ++n)
+                            {
+                                for (int o = 0; o < dfs.nfsh_age_bins; ++o)
+                                {
+                                    idx_caa.set(k,l,m,n,o);
+                                    fshAgeOutput.setFloat(idx_caa, dfs.catch_agecomps[i][j][k][l][m][n][o]);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                System.out.println("copied catch_agecomps values");
+
+                dataFile.write(catchAgesVar, fshAgeOutput);
+                System.out.println("wrote catchAgesVar");
+            }
+
+            System.out.println("finished with catch data");
         }
         catch (IOException | InvalidRangeException e)
         {
@@ -375,8 +412,10 @@ public class WritenetCDFOutputFile
 
                 System.out.println("copied index_array values");
 
+                System.out.println(surveyVar.getNameAndDimensions());
+                System.out.println(Arrays.toString(indexOutput.getShape()));
                 dataFile.write(surveyVar, indexOutput);
-                System.out.println("write surveyVar");
+                System.out.println("wrote indexVar");
 
                 if (dfs.nidx_len_bins > 1)
                 {
@@ -402,7 +441,10 @@ public class WritenetCDFOutputFile
                         }
                     }
 
+                    System.out.println("copied index_lencomps values");
+
                     dataFile.write(surveyLengthsVar, idxLengthOutput);
+                    System.out.println("wrote indexLengthsVar");
                 }
 
                 if (dfs.nidx_age_bins > 1)
@@ -429,7 +471,10 @@ public class WritenetCDFOutputFile
                         }
                     }
 
+                    System.out.println("copied index_agecomps values");
+
                     dataFile.write(surveyAgesVar, idxAgeOutput);
+                    System.out.println("wrote indexAgesVar");
                 }
             }
 
