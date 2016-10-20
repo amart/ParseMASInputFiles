@@ -88,6 +88,47 @@ public class WritenetCDFOutputFile
             Group rootGroup = dataFile.addGroup(null, "");
             NetcdfFile ncf = rootGroup.getNetcdfFile();
 
+            Dimension fshDim     = dataFile.addDimension(rootGroup, "fisheries", dfs.nfsh);
+            Dimension fshYearDim = dataFile.addDimension(rootGroup, "fishery_years", dfs.nyears);
+            Dimension fshSeasDim = dataFile.addDimension(rootGroup, "fishery_seasons", dfs.nseas);
+            Dimension fshSexDim  = dataFile.addDimension(rootGroup, "fishery_sexes", dfs.nsex);
+
+            Dimension fshLenDim = null;
+            if (dfs.nfsh_len_bins > 1)
+            {
+                fshLenDim = dataFile.addDimension(rootGroup, "fishery_lengths", dfs.nfsh_len_bins);
+            }
+            Dimension fshAgeDim = null;
+            if (dfs.nfsh_age_bins > 1)
+            {
+                fshAgeDim = dataFile.addDimension(rootGroup, "fishery_ages", dfs.nfsh_age_bins);
+            }
+
+            Dimension idxDim     = null;
+            Dimension idxYearDim = null;
+            Dimension idxLenDim  = null;
+            Dimension idxAgeDim  = null;
+            if (dfs.nidx > 0)
+            {
+                idxDim     = dataFile.addDimension(rootGroup, "indices", dfs.nidx);
+
+                // NOTE:  these values could be different than the fishery values
+                idxYearDim = dataFile.addDimension(rootGroup, "index_years", dfs.nyears);
+                idxLenDim  = dataFile.addDimension(rootGroup, "index_seasons", dfs.nseas);
+                idxAgeDim  = dataFile.addDimension(rootGroup, "index_sexes", dfs.nsex);
+
+                if (dfs.nidx_len_bins > 1)
+                {
+                    idxLenDim = dataFile.addDimension(rootGroup, "index_lengths", dfs.nidx_len_bins);
+                }
+                if (dfs.nidx_age_bins > 1)
+                {
+                    idxAgeDim = dataFile.addDimension(rootGroup, "index_ages", dfs.nidx_age_bins);
+                }
+            }
+
+            System.out.println("defined dimensions");
+
             for (int i = 0; i < dfs.npops; ++i)
             {
                 for (int j = 0; j < dfs.nareas; ++j)
@@ -100,110 +141,35 @@ public class WritenetCDFOutputFile
                     dataFile.addGroupAttribute(tempGroup, new Attribute("pop_id", i));
                     dataFile.addGroupAttribute(tempGroup, new Attribute("area_id", j));
 
-                    Dimension yearDim = dataFile.addDimension(tempGroup, "years", dfs.nyears);
-                    Dimension seasDim = dataFile.addDimension(tempGroup, "seasons", dfs.nseas);
-                    Dimension sexDim  = dataFile.addDimension(tempGroup, "sexes", dfs.nsex);
-                    Dimension fshDim  = dataFile.addDimension(tempGroup, "fisheries", dfs.nfsh);
-
-                    Dimension fshLenDim = null;
-                    if (dfs.nfsh_len_bins > 1)
-                    {
-                        fshLenDim = dataFile.addDimension(tempGroup, "fishery_lengths", dfs.nfsh_len_bins);
-                    }
-                    Dimension fshAgeDim = null;
-                    if (dfs.nfsh_age_bins > 1)
-                    {
-                        fshAgeDim = dataFile.addDimension(tempGroup, "fishery_ages", dfs.nfsh_age_bins);
-                    }
-
-                    Dimension idxDim    = null;
-                    Dimension idxLenDim = null;
-                    Dimension idxAgeDim = null;
-                    if (dfs.nidx > 0)
-                    {
-                        idxDim = dataFile.addDimension(tempGroup, "indices", dfs.nidx);
-
-                        if (dfs.nidx_len_bins > 1)
-                        {
-                            idxLenDim = dataFile.addDimension(tempGroup, "index_lengths", dfs.nidx_len_bins);
-                        }
-                        if (dfs.nidx_age_bins > 1)
-                        {
-                            idxAgeDim = dataFile.addDimension(tempGroup, "index_ages", dfs.nidx_age_bins);
-                        }
-                    }
-
-                    System.out.println("defined dimensions");
-
-                    // store dimensions
-                    List<Dimension> primaryFshDims = new ArrayList<>();
-                    primaryFshDims.add(fshDim);
-                    primaryFshDims.add(yearDim);
-                    primaryFshDims.add(seasDim);
-
-                    List<Dimension> fshLengthDims = new ArrayList<>();
-                    fshLengthDims.add(fshDim);
-                    fshLengthDims.add(yearDim);
-                    fshLengthDims.add(seasDim);
-                    fshLengthDims.add(sexDim);
-                    fshLengthDims.add(fshLenDim);
-
-                    List<Dimension> fshAgeDims = new ArrayList<>();
-                    fshAgeDims.add(fshDim);
-                    fshAgeDims.add(yearDim);
-                    fshAgeDims.add(seasDim);
-                    fshAgeDims.add(sexDim);
-                    fshAgeDims.add(fshAgeDim);
-
-                    List<Dimension> primaryIdxDims = new ArrayList<>();
-                    primaryIdxDims.add(idxDim);
-                    primaryIdxDims.add(yearDim);
-                    primaryIdxDims.add(seasDim);
-
-                    List<Dimension> idxLengthDims = new ArrayList<>();
-                    idxLengthDims.add(idxDim);
-                    idxLengthDims.add(yearDim);
-                    idxLengthDims.add(seasDim);
-                    idxLengthDims.add(sexDim);
-                    idxLengthDims.add(idxLenDim);
-
-                    List<Dimension> idxAgeDims = new ArrayList<>();
-                    idxAgeDims.add(idxDim);
-                    idxAgeDims.add(yearDim);
-                    idxAgeDims.add(seasDim);
-                    idxAgeDims.add(sexDim);
-                    idxAgeDims.add(idxAgeDim);
-
-                    System.out.println("stored dimension sets");
-
                     // register netCDF variables by group
-                    catchVar = dataFile.addVariable(tempGroup, "catch_biomass", DataType.FLOAT, primaryFshDims);
+                    // catchVar = dataFile.addVariable(tempGroup, "catch_biomass", DataType.FLOAT, primaryFshDims);
+                    catchVar = dataFile.addVariable(tempGroup, "catch_biomass", DataType.FLOAT, "fisheries fishery_years fishery_seasons");
                     catchVar.addAttribute(new Attribute("units", "metric_tonnes"));
                     if (dfs.nfsh_len_bins > 1)
                     {
-                        catchLengthsVar = dataFile.addVariable(tempGroup, "catch_proportions_at_length", DataType.FLOAT, fshLengthDims);
+                        catchLengthsVar = dataFile.addVariable(tempGroup, "catch_proportions_at_length", DataType.FLOAT, "fisheries fishery_years fishery_seasons fishery_sexes fishery_lengths");
                         catchLengthsVar.addAttribute(new Attribute("units","proportion"));
                     }
                     if (dfs.nfsh_age_bins > 1)
                     {
-                        catchAgesVar    = dataFile.addVariable(tempGroup, "catch_proportions_at_age", DataType.FLOAT, fshAgeDims);
+                        catchAgesVar    = dataFile.addVariable(tempGroup, "catch_proportions_at_age", DataType.FLOAT, "fisheries fishery_years fishery_seasons fishery_sexes fishery_ages");
                         catchAgesVar.addAttribute(new Attribute("units","proportion"));
                     }
 
                    if (dfs.nidx > 0)
                     {
-                        surveyVar = dataFile.addVariable(tempGroup, "index_biomass", DataType.FLOAT, primaryIdxDims);
+                        surveyVar = dataFile.addVariable(tempGroup, "index_biomass", DataType.FLOAT, "indices index_years index_seasons");
                         surveyVar.addAttribute(new Attribute("units", "kg"));
 
                         if (dfs.nidx_len_bins > 0)
                         {
-                            surveyLengthsVar = dataFile.addVariable(tempGroup, "index_proportions_at_length", DataType.FLOAT, idxLengthDims);
+                            surveyLengthsVar = dataFile.addVariable(tempGroup, "index_proportions_at_length", DataType.FLOAT, "indices index_years index_seasons index_sexes index_lengths");
                             surveyLengthsVar.addAttribute(new Attribute("units","proportion"));
                         }
 
                         if (dfs.nidx_age_bins > 0)
                         {
-                            surveyAgesVar    = dataFile.addVariable(tempGroup, "index_proportions_at_age", DataType.FLOAT, idxAgeDims);
+                            surveyAgesVar    = dataFile.addVariable(tempGroup, "index_proportions_at_age", DataType.FLOAT, "indices index_years index_seasons index_sexes index_ages");
                             surveyAgesVar.addAttribute(new Attribute("units","proportion"));
                         }
                     }
@@ -264,9 +230,14 @@ public class WritenetCDFOutputFile
     public void writeCatch(final DataFileStructure dfs, NetcdfFileWriter dataFile, final int pop_num, final int area_num,
                            Variable catchVar, Variable catchLengthsVar, Variable catchAgesVar) throws Exception
     {
-        if (dfs == null)
+        if (null == dfs)
         {
             throw new Exception("DataFileStructure not initialized");
+        }
+
+        if (null == dataFile)
+        {
+            throw new Exception("NetcdfFileWriter not initialized");
         }
 
         try
@@ -363,26 +334,19 @@ public class WritenetCDFOutputFile
         {
           e.printStackTrace();
         }
-        finally
-        {
-          if (null != dataFile)
-            try
-            {
-              dataFile.close();
-            }
-            catch (IOException ioe)
-            {
-              ioe.printStackTrace();
-            }
-        }
     }
 
     public void writeIndex(final DataFileStructure dfs, NetcdfFileWriter dataFile, final int pop_num, final int area_num,
                            Variable surveyVar, Variable surveyLengthsVar, Variable surveyAgesVar) throws Exception
     {
-        if (dfs == null)
+        if (null == dfs)
         {
             throw new Exception("DataFileStructure not initialized");
+        }
+
+        if (null == dataFile)
+        {
+            throw new Exception("NetcdfFileWriter not initialized");
         }
 
         try
@@ -483,18 +447,6 @@ public class WritenetCDFOutputFile
         catch (IOException | InvalidRangeException e)
         {
           e.printStackTrace();
-        }
-        finally
-        {
-          if (null != dataFile)
-            try
-            {
-              dataFile.close();
-            }
-            catch (IOException ioe)
-            {
-              ioe.printStackTrace();
-            }
         }
     }
 
