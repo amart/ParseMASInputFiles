@@ -48,49 +48,57 @@ public class DataFileStructure
     float[][][][][] catch_array = null;                 // population, area, fleet, year, season
     float[][][][][][][] catch_mass_at_age      = null;  // population, area, fleet, year, season, sex, fishery age bin
     float[][][][][][][] catch_lencomps         = null;  // population, area, fleet, year, season, sex, fishery length bin
+    float[][][][][][] catch_lencomps_N         = null;  // population, area, fleet, year, season, sex
     float[][][][][][][] catch_agecomps         = null;  // population, area, fleet, year, season, sex, fishery age bin
+    float[][][][][][] catch_agecomps_N         = null;  // population, area, fleet, year, season, sex
     float[][][][][][][] catch_mean_size_at_age = null;  // population, area, fleet, year, season, sex, fishery age bin
 
     float[][][][][] index_array = null;                 // population, area, index, year, season
     float[][][][][][][] index_mass_at_age      = null;  // population, area, index, year, season, sex, index age bin
     float[][][][][][][] index_lencomps         = null;  // population, area, index, year, season, sex, index length bin
+    float[][][][][][] index_lencomps_N         = null;  // population, area, index, year, season, sex
     float[][][][][][][] index_agecomps         = null;  // population, area, index, year, season, sex, index age bin
+    float[][][][][][] index_agecomps_N         = null;  // population, area, index, year, season, sex
     float[][][][][][][] index_mean_size_at_age = null;  // population, area, index, year, season, sex, index age bin
 
     void print()
     {
-        System.out.println(String.join("data filename: ", this.datafilename));
-        System.out.println(String.join("netCDF filename: ", this.netCDFfilename));
-        System.out.println(String.join("placeholder value for missing data: ", Integer.toString(this.placeholder_value)));
-        System.out.println(String.join("npopulations: ", Integer.toString(this.npops)));
-        System.out.println(String.join("nareas: ", Integer.toString(this.nareas)));
-        System.out.println(String.join("start year: ", Integer.toString(this.start_year)));
-        System.out.println(String.join("end year: ", Integer.toString(this.end_year)));
-        System.out.println(String.join("nyears: ", Integer.toString(this.nyears)));
-        System.out.println(String.join("nseas: ", Integer.toString(this.nseas)));
-        System.out.println(String.join("seas fraction: ", Arrays.toString(this.seas_frac)));
-        System.out.println(String.join("nsex: ", Integer.toString(this.nsex)));
-        System.out.println(String.join("nfisheries: ", Integer.toString(this.nfsh)));
-        System.out.println(String.join("n fishery length bins: ", Integer.toString(this.nfsh_len_bins)));
-        System.out.println(String.join("fishery length bins: ", Arrays.toString(this.fsh_len_bins)));
-        System.out.println(String.join("n fisery age bins: ", Integer.toString(this.nfsh_age_bins)));
-        System.out.println(String.join("fishery age bins: ", Arrays.toString(this.fsh_age_bins)));
-        System.out.println(String.join("nindices: ", Integer.toString(this.nidx)));
-        System.out.println(String.join("n index length bins: ", Integer.toString(this.nidx_len_bins)));
-        System.out.println(String.join("index length bins: ", Arrays.toString(this.idx_len_bins)));
-        System.out.println(String.join("n index age bins: ", Integer.toString(this.nidx_age_bins)));
-        System.out.println(String.join("index age bins: ", Arrays.toString(this.idx_age_bins)));
+        System.out.println("data filename: " + this.datafilename);
+        System.out.println("netCDF filename: " + this.netCDFfilename);
+        System.out.println("placeholder value for missing data: " + Integer.toString(this.placeholder_value));
+        System.out.println("npopulations: " + Integer.toString(this.npops));
+        System.out.println("nareas: " + Integer.toString(this.nareas));
+        System.out.println("start year: " + Integer.toString(this.start_year));
+        System.out.println("end year: " + Integer.toString(this.end_year));
+        System.out.println("nyears: " + Integer.toString(this.nyears));
+        System.out.println("nseas: " + Integer.toString(this.nseas));
+        System.out.println("seas fraction: " + Arrays.toString(this.seas_frac));
+        System.out.println("nsex: " + Integer.toString(this.nsex));
+        System.out.println("nfisheries: " + Integer.toString(this.nfsh));
+        System.out.println("n fishery length bins: " + Integer.toString(this.nfsh_len_bins));
+        System.out.println("fishery length bins: " + Arrays.toString(this.fsh_len_bins));
+        System.out.println("n fisery age bins: " + Integer.toString(this.nfsh_age_bins));
+        System.out.println("fishery age bins: " + Arrays.toString(this.fsh_age_bins));
+        System.out.println("nindices: " + Integer.toString(this.nidx));
+        System.out.println("n index length bins: " + Integer.toString(this.nidx_len_bins));
+        System.out.println("index length bins: " + Arrays.toString(this.idx_len_bins));
+        System.out.println("n index age bins: " + Integer.toString(this.nidx_age_bins));
+        System.out.println("index age bins: " + Arrays.toString(this.idx_age_bins));
 
-        System.out.println(String.join("catch: ", Arrays.deepToString(this.catch_array)));
-        System.out.println(String.join("catch mass at age: ", Arrays.deepToString(this.catch_mass_at_age)));
-        System.out.println(String.join("catch length comps: ", Arrays.deepToString(this.catch_lencomps)));
-        System.out.println(String.join("catch age comps: ", Arrays.deepToString(this.catch_agecomps)));
-        System.out.println(String.join("catch mean size at age: ", Arrays.deepToString(this.catch_mean_size_at_age)));
+        System.out.println("catch: " + Arrays.deepToString(this.catch_array));
+        System.out.println("catch mass at age: " + Arrays.deepToString(this.catch_mass_at_age));
+        System.out.println("catch length comps sample sizes: " + Arrays.deepToString(this.catch_lencomps_N));
+        System.out.println("catch length comps: " + Arrays.deepToString(this.catch_lencomps));
+        System.out.println("catch age comps sample sizes: " + Arrays.deepToString(this.catch_agecomps_N));
+        System.out.println("catch age comps: " + Arrays.deepToString(this.catch_agecomps));
+        System.out.println("catch mean size at age: " + Arrays.deepToString(this.catch_mean_size_at_age));
 
-        System.out.println(String.join("indices: ", Arrays.deepToString(this.index_array)));
-        System.out.println(String.join("index mass at age: ", Arrays.deepToString(this.index_mass_at_age)));
-        System.out.println(String.join("index length comps: ", Arrays.deepToString(this.index_lencomps)));
-        System.out.println(String.join("index age comps: ", Arrays.deepToString(this.index_agecomps)));
-        System.out.println(String.join("index mean size at age: ", Arrays.deepToString(this.index_mean_size_at_age)));
+        System.out.println("indices: " + Arrays.deepToString(this.index_array));
+        System.out.println("index mass at age: " + Arrays.deepToString(this.index_mass_at_age));
+        System.out.println("index length comps sample sizes: " + Arrays.deepToString(this.index_lencomps_N));
+        System.out.println("index length comps: " + Arrays.deepToString(this.index_lencomps));
+        System.out.println("index age comps sample sizes: " + Arrays.deepToString(this.index_agecomps_N));
+        System.out.println("index age comps: " + Arrays.deepToString(this.index_agecomps));
+        System.out.println("index mean size at age: " + Arrays.deepToString(this.index_mean_size_at_age));
     }
 }
