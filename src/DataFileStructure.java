@@ -45,13 +45,17 @@ public class DataFileStructure
     int nidx_age_bins = -1;
     int[] idx_age_bins = null;
 
-    float[][][][][] catch_array = null;           // population, area, fleet, year, season
-    float[][][][][][][] catch_lencomps = null;    // population, area, fleet, year, season, sex, fishery length bin
-    float[][][][][][][] catch_agecomps = null;    // population, area, fleet, year, season, sex, fishery age bin
+    float[][][][][] catch_array = null;                 // population, area, fleet, year, season
+    float[][][][][][][] catch_mass_at_age      = null;  // population, area, fleet, year, season, sex, fishery age bin
+    float[][][][][][][] catch_lencomps         = null;  // population, area, fleet, year, season, sex, fishery length bin
+    float[][][][][][][] catch_agecomps         = null;  // population, area, fleet, year, season, sex, fishery age bin
+    float[][][][][][][] catch_mean_size_at_age = null;  // population, area, fleet, year, season, sex, fishery age bin
 
-    float[][][][][] index_array = null;           // population, area, index, year, season
-    float[][][][][][][] index_lencomps = null;    // population, area, index, year, season, sex, index length bin
-    float[][][][][][][] index_agecomps = null;    // population, area, index, year, season, sex, index age bin
+    float[][][][][] index_array = null;                 // population, area, index, year, season
+    float[][][][][][][] index_mass_at_age      = null;  // population, area, index, year, season, sex, index age bin
+    float[][][][][][][] index_lencomps         = null;  // population, area, index, year, season, sex, index length bin
+    float[][][][][][][] index_agecomps         = null;  // population, area, index, year, season, sex, index age bin
+    float[][][][][][][] index_mean_size_at_age = null;  // population, area, index, year, season, sex, index age bin
 
     void print()
     {
@@ -78,10 +82,15 @@ public class DataFileStructure
         System.out.println(String.join("index age bins: ", Arrays.toString(this.idx_age_bins)));
 
         System.out.println(String.join("catch: ", Arrays.deepToString(this.catch_array)));
+        System.out.println(String.join("catch mass at age: ", Arrays.deepToString(this.catch_mass_at_age)));
         System.out.println(String.join("catch length comps: ", Arrays.deepToString(this.catch_lencomps)));
         System.out.println(String.join("catch age comps: ", Arrays.deepToString(this.catch_agecomps)));
+        System.out.println(String.join("catch mean size at age: ", Arrays.deepToString(this.catch_mean_size_at_age)));
+
         System.out.println(String.join("indices: ", Arrays.deepToString(this.index_array)));
+        System.out.println(String.join("index mass at age: ", Arrays.deepToString(this.index_mass_at_age)));
         System.out.println(String.join("index length comps: ", Arrays.deepToString(this.index_lencomps)));
         System.out.println(String.join("index age comps: ", Arrays.deepToString(this.index_agecomps)));
+        System.out.println(String.join("index mean size at age: ", Arrays.deepToString(this.index_mean_size_at_age)));
     }
 }
