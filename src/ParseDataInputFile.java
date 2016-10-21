@@ -229,12 +229,7 @@ public class ParseDataInputFile
                 }
             }
 
-
-            // other stuff...
-
             line = readLines_skip_blanks_and_hashes(br);
-
-            // NOTE:  seasons ARE NOT USED for the following arrays
 
             // catch vectors READ, by population, area, year, season
             split_line = line.split("\\s+");
@@ -246,32 +241,71 @@ public class ParseDataInputFile
                 {
                     for (int k = 0; k < dfs.nfsh; ++k)
                     {
-                        for (int l = 0; l < dfs.nyears; ++l)
+                        for (int m = 0; m < dfs.nseas; ++m)
                         {
-                            // dfs.catch_array[i][j][k][l][m] = Float.parseFloat(split_line[idx]);
-                            dfs.catch_array[i][j][k][l][0] = Float.parseFloat(split_line[idx]);
-                            idx++;
-                        }
+                            for (int l = 0; l < dfs.nyears; ++l)
+                            {
+                                dfs.catch_array[i][j][k][l][m] = Float.parseFloat(split_line[idx]);
+                                idx++;
+                            }
 
-                        line = br.readLine();
-                        if (line.isEmpty())
-                        {
                             line = br.readLine();
+                            if (line.isEmpty())
+                            {
+                                line = br.readLine();
+                            }
+                            if (!line.isEmpty())
+                            {
+                                split_line = line.split("\\s+");
+                            }
+                            idx = 0;
                         }
-                        if (!line.isEmpty())
-                        {
-                            split_line = line.split("\\s+");
-                        }
-                        idx = 0;
                     }
                 }
             }
 
-            // catch length composition vectors READ, by population, area, year, season, sex, fishery length bin
             if (dfs.nfsh_len_bins > 1)
             {
                 line = readLines_skip_blanks_and_hashes(br);
 
+                // catch length composition sample size vectors READ, by population, area, fishery, year, season, sex
+                split_line = line.split("\\s+");
+                dfs.catch_lencomps_N = new float[dfs.npops][dfs.nareas][dfs.nfsh][dfs.nyears][dfs.nseas][dfs.nsex];
+                idx = 0;
+                for (int i = 0; i < dfs.npops; ++i)
+                {
+                    for (int j = 0; j < dfs.nareas; ++j)
+                    {
+                        for (int k = 0; k < dfs.nfsh; ++k)
+                        {
+                            for (int m = 0; m < dfs.nseas; ++m)
+                            {
+                                for (int n = 0; n < dfs.nsex; ++n)
+                                {
+                                    for (int l = 0; l < dfs.nyears; ++l)
+                                    {
+                                        dfs.catch_lencomps_N[i][j][k][l][m][n] = Float.parseFloat(split_line[idx]);
+                                        idx++;
+                                    }
+
+                                    line = br.readLine();
+                                    if (line.isEmpty())
+                                    {
+                                        line = br.readLine();
+                                    }
+                                    if (!line.isEmpty())
+                                    {
+                                        split_line = line.split("\\s+");
+                                    }
+                                    idx = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+                line = readLines_skip_blanks_and_hashes(br);
+
+                // catch length composition vectors READ, by population, area, fishery, year, season, sex, fishery length bin
                 split_line = line.split("\\s+");
                 dfs.catch_lencomps = new float[dfs.npops][dfs.nareas][dfs.nfsh][dfs.nyears][dfs.nseas][dfs.nsex][dfs.nfsh_len_bins];
                 idx = 0;
@@ -281,34 +315,77 @@ public class ParseDataInputFile
                     {
                         for (int k = 0; k < dfs.nfsh; ++k)
                         {
-                            for (int o = 0; o < dfs.nfsh_len_bins; ++o)
+                            for (int m = 0; m < dfs.nseas; ++m)
                             {
-                                for (int l = 0; l < dfs.nyears; ++l)
+                                for (int n = 0; n < dfs.nsex; ++n)
                                 {
-                                    // dfs.catch_array[i][j][k][l] = Float.parseFloat(split_line[idx]);
-                                    dfs.catch_lencomps[i][j][k][l][0][0][o] = Float.parseFloat(split_line[idx]);
-                                    idx++;
-                                }
+                                    for (int o = 0; o < dfs.nfsh_len_bins; ++o)
+                                    {
+                                        for (int l = 0; l < dfs.nyears; ++l)
+                                        {
+                                            dfs.catch_lencomps[i][j][k][l][m][n][o] = Float.parseFloat(split_line[idx]);
+                                            idx++;
+                                        }
 
-                                line = br.readLine();
-                                if (line.isEmpty())
-                                {
-                                    line = br.readLine();
+                                        line = br.readLine();
+                                        if (line.isEmpty())
+                                        {
+                                            line = br.readLine();
+                                        }
+                                        if (!line.isEmpty())
+                                        {
+                                            split_line = line.split("\\s+");
+                                        }
+                                        idx = 0;
+                                    }
                                 }
-                                if (!line.isEmpty())
-                                {
-                                    split_line = line.split("\\s+");
-                                }
-                                idx = 0;
                             }
                         }
                     }
                 }
             }
 
-            // catch age composition vectors READ, by population, area, year, season, fishery age bin
             if (dfs.nfsh_age_bins > 1)
             {
+                // catch age composition sample size vectors READ, by population, area, fishery, year, season, sex
+                line = readLines_skip_blanks_and_hashes(br);
+
+                split_line = line.split("\\s+");
+                dfs.catch_agecomps_N = new float[dfs.npops][dfs.nareas][dfs.nfsh][dfs.nyears][dfs.nseas][dfs.nsex];
+                idx = 0;
+                for (int i = 0; i < dfs.npops; ++i)
+                {
+                    for (int j = 0; j < dfs.nareas; ++j)
+                    {
+                        for (int k = 0; k < dfs.nfsh; ++k)
+                        {
+                            for (int m = 0; m < dfs.nseas; ++m)
+                            {
+                                for (int n = 0; n < dfs.nsex; ++n)
+                                {
+                                    for (int l = 0; l < dfs.nyears; ++l)
+                                    {
+                                        dfs.catch_agecomps_N[i][j][k][l][m][n] = Float.parseFloat(split_line[idx]);
+                                        idx++;
+                                    }
+
+                                    line = br.readLine();
+                                    if (line.isEmpty())
+                                    {
+                                        line = br.readLine();
+                                    }
+                                    if (!line.isEmpty())
+                                    {
+                                        split_line = line.split("\\s+");
+                                    }
+                                    idx = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // catch age composition vectors READ, by population, area, fishery, year, season, sex, fishery age bin
                 line = readLines_skip_blanks_and_hashes(br);
 
                 split_line = line.split("\\s+");
@@ -320,25 +397,30 @@ public class ParseDataInputFile
                     {
                         for (int k = 0; k < dfs.nfsh; ++k)
                         {
-                            for (int o = 0; o < dfs.nfsh_age_bins; ++o)
+                            for (int m = 0; m < dfs.nseas; ++m)
                             {
-                                for (int l = 0; l < dfs.nyears; ++l)
+                                for (int n = 0; n < dfs.nsex; ++n)
                                 {
-                                    // dfs.catch_agecomps[i][j][k][l][m][n][o] = Float.parseFloat(split_line[idx]);
-                                    dfs.catch_agecomps[i][j][k][l][0][0][o] = Float.parseFloat(split_line[idx]);
-                                    idx++;
-                                }
+                                    for (int o = 0; o < dfs.nfsh_age_bins; ++o)
+                                    {
+                                        for (int l = 0; l < dfs.nyears; ++l)
+                                        {
+                                            dfs.catch_agecomps[i][j][k][l][m][n][o] = Float.parseFloat(split_line[idx]);
+                                            idx++;
+                                        }
 
-                                line = br.readLine();
-                                if (line.isEmpty())
-                                {
-                                    line = br.readLine();
+                                        line = br.readLine();
+                                        if (line.isEmpty())
+                                        {
+                                            line = br.readLine();
+                                        }
+                                        if (!line.isEmpty())
+                                        {
+                                            split_line = line.split("\\s+");
+                                        }
+                                        idx = 0;
+                                    }
                                 }
-                                if (!line.isEmpty())
-                                {
-                                    split_line = line.split("\\s+");
-                                }
-                                idx = 0;
                             }
                         }
                     }
@@ -349,7 +431,7 @@ public class ParseDataInputFile
             {
                 line = readLines_skip_blanks_and_hashes(br);
 
-                // index vectors READ, by population, area, year, season
+                // index vectors READ, by population, area, index, year, season
                 split_line = line.split("\\s+");
                 dfs.index_array = new float[dfs.npops][dfs.nareas][dfs.nidx][dfs.nyears][dfs.nseas];
                 idx = 0;
@@ -359,30 +441,70 @@ public class ParseDataInputFile
                     {
                         for (int k = 0; k < dfs.nidx; ++k)
                         {
-                            for (int l = 0; l < dfs.nyears; ++l)
+                            for (int m = 0; m < dfs.nseas; ++m)
                             {
-                                // dfs.catch_array[i][j][k][l] = Float.parseFloat(split_line[idx]);
-                                dfs.index_array[i][j][k][l][0] = Float.parseFloat(split_line[idx]);
-                                idx++;
-                            }
+                                for (int l = 0; l < dfs.nyears; ++l)
+                                {
+                                    dfs.index_array[i][j][k][l][m] = Float.parseFloat(split_line[idx]);
+                                    idx++;
+                                }
 
-                            line = br.readLine();
-                            if (line.isEmpty())
-                            {
                                 line = br.readLine();
+                                if (line.isEmpty())
+                                {
+                                    line = br.readLine();
+                                }
+                                if (null != line && !line.isEmpty())
+                                {
+                                    split_line = line.split("\\s+");
+                                }
+                                idx = 0;
                             }
-                            if (null != line && !line.isEmpty())
-                            {
-                                split_line = line.split("\\s+");
-                            }
-                            idx = 0;
                         }
                     }
                 }
 
-                // index length composition vectors READ, by population, area, index, year, season, sex, index length bin
                 if (dfs.nidx_len_bins > 1)
                 {
+                    // index length composition sample size vectors READ, by population, area, index, year, season, sex
+                    line = readLines_skip_blanks_and_hashes(br);
+
+                    split_line = line.split("\\s+");
+                    dfs.index_lencomps_N = new float[dfs.npops][dfs.nareas][dfs.nidx][dfs.nyears][dfs.nseas][dfs.nsex];
+                    idx = 0;
+                    for (int i = 0; i < dfs.npops; ++i)
+                    {
+                        for (int j = 0; j < dfs.nareas; ++j)
+                        {
+                            for (int k = 0; k < dfs.nidx; ++k)
+                            {
+                                for (int m = 0; m < dfs.nseas; ++m)
+                                {
+                                    for (int n = 0; n < dfs.nsex; ++n)
+                                    {
+                                        for (int l = 0; l < dfs.nyears; ++l)
+                                        {
+                                            dfs.index_lencomps_N[i][j][k][l][m][n] = Float.parseFloat(split_line[idx]);
+                                            idx++;
+                                        }
+
+                                        line = br.readLine();
+                                        if (line.isEmpty())
+                                        {
+                                            line = br.readLine();
+                                        }
+                                        if (null != line && !line.isEmpty())
+                                        {
+                                            split_line = line.split("\\s+");
+                                        }
+                                        idx = 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // index length composition vectors READ, by population, area, index, year, season, sex, index length bin
                     line = readLines_skip_blanks_and_hashes(br);
 
                     split_line = line.split("\\s+");
@@ -394,34 +516,77 @@ public class ParseDataInputFile
                         {
                             for (int k = 0; k < dfs.nidx; ++k)
                             {
-                                for (int o = 0; o < dfs.nidx_len_bins; ++o)
+                                for (int m = 0; m < dfs.nseas; ++m)
                                 {
-                                    for (int l = 0; l < dfs.nyears; ++l)
+                                    for (int n = 0; n < dfs.nsex; ++n)
                                     {
-                                        // dfs.catch_array[i][j][k][l] = Float.parseFloat(split_line[idx]);
-                                        dfs.index_lencomps[i][j][k][l][0][0][o] = Float.parseFloat(split_line[idx]);
-                                        idx++;
-                                    }
+                                        for (int o = 0; o < dfs.nidx_len_bins; ++o)
+                                        {
+                                            for (int l = 0; l < dfs.nyears; ++l)
+                                            {
+                                                dfs.index_lencomps[i][j][k][l][m][n][o] = Float.parseFloat(split_line[idx]);
+                                                idx++;
+                                            }
 
-                                    line = br.readLine();
-                                    if (line.isEmpty())
-                                    {
-                                        line = br.readLine();
+                                            line = br.readLine();
+                                            if (line.isEmpty())
+                                            {
+                                                line = br.readLine();
+                                            }
+                                            if (null != line && !line.isEmpty())
+                                            {
+                                                split_line = line.split("\\s+");
+                                            }
+                                            idx = 0;
+                                        }
                                     }
-                                    if (null != line && !line.isEmpty())
-                                    {
-                                        split_line = line.split("\\s+");
-                                    }
-                                    idx = 0;
                                 }
                             }
                         }
                     }
                 }
 
-                // index age composition vectors READ, by population, area, index, year, season, index age bin
                 if (dfs.nidx_age_bins > 1)
                 {
+                    // index age composition sample size vectors READ, by population, area, index, year, season, sex
+                    line = readLines_skip_blanks_and_hashes(br);
+
+                    split_line = line.split("\\s+");
+                    dfs.index_agecomps_N = new float[dfs.npops][dfs.nareas][dfs.nidx][dfs.nyears][dfs.nseas][dfs.nsex];
+                    idx = 0;
+                    for (int i = 0; i < dfs.npops; ++i)
+                    {
+                        for (int j = 0; j < dfs.nareas; ++j)
+                        {
+                            for (int k = 0; k < dfs.nidx; ++k)
+                            {
+                                for (int m = 0; m < dfs.nseas; ++m)
+                                {
+                                    for (int n = 0; n < dfs.nsex; ++n)
+                                    {
+                                        for (int l = 0; l < dfs.nyears; ++l)
+                                        {
+                                            dfs.index_agecomps_N[i][j][k][l][m][n] = Float.parseFloat(split_line[idx]);
+                                            idx++;
+                                        }
+
+                                        line = br.readLine();
+                                        if (line.isEmpty())
+                                        {
+                                            line = br.readLine();
+                                        }
+                                        if (null != line && !line.isEmpty())
+                                        {
+                                            split_line = line.split("\\s+");
+                                        }
+                                        idx = 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // index age composition vectors READ, by population, area, index, year, season, sex, index age bin
                     line = readLines_skip_blanks_and_hashes(br);
 
                     split_line = line.split("\\s+");
@@ -433,25 +598,30 @@ public class ParseDataInputFile
                         {
                             for (int k = 0; k < dfs.nidx; ++k)
                             {
-                                for (int o = 0; o < dfs.nidx_age_bins; ++o)
+                                for (int m = 0; m < dfs.nseas; ++m)
                                 {
-                                    for (int l = 0; l < dfs.nyears; ++l)
+                                    for (int n = 0; n < dfs.nsex; ++n)
                                     {
-                                        // dfs.catch_agecomps[i][j][k][l][m][n][o] = Float.parseFloat(split_line[idx]);
-                                        dfs.index_agecomps[i][j][k][l][0][0][o] = Float.parseFloat(split_line[idx]);
-                                        idx++;
-                                    }
+                                        for (int o = 0; o < dfs.nidx_age_bins; ++o)
+                                        {
+                                            for (int l = 0; l < dfs.nyears; ++l)
+                                            {
+                                                dfs.index_agecomps[i][j][k][l][m][n][o] = Float.parseFloat(split_line[idx]);
+                                                idx++;
+                                            }
 
-                                    line = br.readLine();
-                                    if (line.isEmpty())
-                                    {
-                                        line = br.readLine();
+                                            line = br.readLine();
+                                            if (line.isEmpty())
+                                            {
+                                                line = br.readLine();
+                                            }
+                                            if (null != line && !line.isEmpty())
+                                            {
+                                                split_line = line.split("\\s+");
+                                            }
+                                            idx = 0;
+                                        }
                                     }
-                                    if (null != line && !line.isEmpty())
-                                    {
-                                        split_line = line.split("\\s+");
-                                    }
-                                    idx = 0;
                                 }
                             }
                         }
