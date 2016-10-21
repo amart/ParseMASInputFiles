@@ -11,7 +11,6 @@ import ucar.ma2.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
-import java.util.Arrays;
 
 /*
 import ucar.nc2.NetcdfFileWriter;
@@ -74,7 +73,6 @@ public class WritenetCDFOutputFile
 
             int gidx = 0;
             String gname = "";
-            String gidx_st = "";
 
             Variable catchVar         = null;
             Variable catchLengthsVar  = null;
@@ -134,7 +132,6 @@ public class WritenetCDFOutputFile
                 for (int j = 0; j < dfs.nareas; ++j)
                 {
                     gname   = "pop_" + Integer.toString(i) + "_area_" + Integer.toString(j);
-                    gidx_st = Integer.toString(gidx);
 
                     tempGroup = dataFile.addGroup(rootGroup, gname);
                     // tempGroup = new Group(ncf, rootGroup, gname);
@@ -263,8 +260,8 @@ public class WritenetCDFOutputFile
 
             System.out.println("copied catch_array values");
 
-            System.out.println(catchVar.getNameAndDimensions());
-            System.out.println(Arrays.toString(catchOutput.getShape()));
+            // System.out.println(catchVar.getNameAndDimensions());
+            // System.out.println(Arrays.toString(catchOutput.getShape()));
             dataFile.write(catchVar, catchOutput);
             System.out.println("wrote catchVar");
 
@@ -376,8 +373,8 @@ public class WritenetCDFOutputFile
 
                 System.out.println("copied index_array values");
 
-                System.out.println(surveyVar.getNameAndDimensions());
-                System.out.println(Arrays.toString(indexOutput.getShape()));
+                // System.out.println(surveyVar.getNameAndDimensions());
+                // System.out.println(Arrays.toString(indexOutput.getShape()));
                 dataFile.write(surveyVar, indexOutput);
                 System.out.println("wrote indexVar");
 
@@ -449,15 +446,4 @@ public class WritenetCDFOutputFile
           e.printStackTrace();
         }
     }
-
-    /*
-    Nc4Chunking chunker = Nc4Chunking factory(Strategy type, int deflateLevel, boolean shuffle);
-    NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf4;
-
-    FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, chunker);
-    // blar blar blar
-    NetcdfFile ncfileOut = writer.write();
-    ncfileIn.close();
-    ncfileOut.close();
-    */
 }
