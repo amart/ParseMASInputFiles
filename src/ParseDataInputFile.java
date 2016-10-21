@@ -8,7 +8,6 @@ package parsemasinputfiles;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  *
@@ -43,7 +42,7 @@ public class ParseDataInputFile
 
             line = readLines_skip_blanks_and_hashes(br);
 
-                    // placeholder value for missing data READ
+            // placeholder value for missing data READ
             dfs.placeholder_value = Integer.parseInt(line);
             if (dfs.npops >= 0)
             {
@@ -249,19 +248,22 @@ public class ParseDataInputFile
                     {
                         for (int l = 0; l < dfs.nyears; ++l)
                         {
-                            // for (int l = 0; l < dfs.nseas; ++l)
-                            // {
-                                // dfs.catch_array[i][j][k][l] = Float.parseFloat(split_line[idx]);
-                                dfs.catch_array[i][j][k][l][0] = Float.parseFloat(split_line[idx]);
-                                idx++;
-                            // }
+                            // dfs.catch_array[i][j][k][l][m] = Float.parseFloat(split_line[idx]);
+                            dfs.catch_array[i][j][k][l][0] = Float.parseFloat(split_line[idx]);
+                            idx++;
                         }
-                    }
 
-                    line = br.readLine();   // read blank line
-                    line = br.readLine();
-                    split_line = line.split("\\s+");
-                    idx = 0;
+                        line = br.readLine();
+                        if (line.isEmpty())
+                        {
+                            line = br.readLine();
+                        }
+                        if (!line.isEmpty())
+                        {
+                            split_line = line.split("\\s+");
+                        }
+                        idx = 0;
+                    }
                 }
             }
 
@@ -287,13 +289,19 @@ public class ParseDataInputFile
                                     dfs.catch_lencomps[i][j][k][l][0][0][o] = Float.parseFloat(split_line[idx]);
                                     idx++;
                                 }
+
+                                line = br.readLine();
+                                if (line.isEmpty())
+                                {
+                                    line = br.readLine();
+                                }
+                                if (!line.isEmpty())
+                                {
+                                    split_line = line.split("\\s+");
+                                }
+                                idx = 0;
                             }
                         }
-
-                        line = br.readLine();   // read blank line
-                        line = br.readLine();
-                        split_line = line.split("\\s+");
-                        idx = 0;
                     }
                 }
             }
@@ -322,6 +330,10 @@ public class ParseDataInputFile
                                 }
 
                                 line = br.readLine();
+                                if (line.isEmpty())
+                                {
+                                    line = br.readLine();
+                                }
                                 if (!line.isEmpty())
                                 {
                                     split_line = line.split("\\s+");
@@ -329,31 +341,7 @@ public class ParseDataInputFile
                                 idx = 0;
                             }
                         }
-
-                        if (dfs.nfsh > 1)
-                        {
-                            line = br.readLine();   // read blank line
-                            line = br.readLine();
-                            split_line = line.split("\\s+");
-                            idx = 0;
-                        }
                     }
-
-                    if (dfs.nareas > 1)
-                    {
-                        line = br.readLine();   // read blank line
-                        line = br.readLine();
-                        split_line = line.split("\\s+");
-                        idx = 0;
-                    }
-                }
-
-                if (dfs.npops > 1)
-                {
-                    line = br.readLine();   // read blank line
-                    line = br.readLine();
-                    split_line = line.split("\\s+");
-                    idx = 0;
                 }
             }
 
@@ -377,15 +365,20 @@ public class ParseDataInputFile
                                 dfs.index_array[i][j][k][l][0] = Float.parseFloat(split_line[idx]);
                                 idx++;
                             }
-                        }
 
-                        line = br.readLine();   // read blank line
-                        line = br.readLine();
-                        split_line = line.split("\\s+");
-                        idx = 0;
+                            line = br.readLine();
+                            if (line.isEmpty())
+                            {
+                                line = br.readLine();
+                            }
+                            if (null != line && !line.isEmpty())
+                            {
+                                split_line = line.split("\\s+");
+                            }
+                            idx = 0;
+                        }
                     }
                 }
-
 
                 // index length composition vectors READ, by population, area, index, year, season, sex, index length bin
                 if (dfs.nidx_len_bins > 1)
@@ -409,13 +402,19 @@ public class ParseDataInputFile
                                         dfs.index_lencomps[i][j][k][l][0][0][o] = Float.parseFloat(split_line[idx]);
                                         idx++;
                                     }
+
+                                    line = br.readLine();
+                                    if (line.isEmpty())
+                                    {
+                                        line = br.readLine();
+                                    }
+                                    if (null != line && !line.isEmpty())
+                                    {
+                                        split_line = line.split("\\s+");
+                                    }
+                                    idx = 0;
                                 }
                             }
-
-                            line = br.readLine();   // read blank line
-                            line = br.readLine();
-                            split_line = line.split("\\s+");
-                            idx = 0;
                         }
                     }
                 }
@@ -444,38 +443,18 @@ public class ParseDataInputFile
                                     }
 
                                     line = br.readLine();
-                                    if (!line.isEmpty())
+                                    if (line.isEmpty())
+                                    {
+                                        line = br.readLine();
+                                    }
+                                    if (null != line && !line.isEmpty())
                                     {
                                         split_line = line.split("\\s+");
                                     }
                                     idx = 0;
                                 }
                             }
-
-                            if (dfs.nidx > 1)
-                            {
-                                line = br.readLine();   // read blank line
-                                line = br.readLine();
-                                split_line = line.split("\\s+");
-                                idx = 0;
-                            }
                         }
-
-                        if (dfs.nareas > 1)
-                        {
-                            line = br.readLine();   // read blank line
-                            line = br.readLine();
-                            split_line = line.split("\\s+");
-                            idx = 0;
-                        }
-                    }
-
-                    if (dfs.npops > 1)
-                    {
-                        line = br.readLine();   // read blank line
-                        line = br.readLine();
-                        split_line = line.split("\\s+");
-                        idx = 0;
                     }
                 }
             }
@@ -492,7 +471,7 @@ public class ParseDataInputFile
 
     String readLines_skip_blanks_and_hashes(BufferedReader br)
     {
-        String line = "";
+        String line = null;
 
         try
         {
